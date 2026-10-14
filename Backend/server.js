@@ -1,3 +1,8 @@
+// Must load before anything below: app.js's import chain reaches prisma.js,
+// which reads DATABASE_URL at module-load time, before env.js's own
+// dotenv.config() call would otherwise run.
+import 'dotenv/config';
+
 import http from 'http';
 import crypto from 'crypto';
 import path from 'path';

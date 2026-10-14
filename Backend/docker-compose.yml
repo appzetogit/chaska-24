@@ -1,29 +1,29 @@
 # The database the test suite and local development run against.
 #
 #   docker compose up -d
-#   export DATABASE_URL="postgresql://minto:minto@localhost:5433/minto?schema=public"
+#   export DATABASE_URL="postgresql://chaska:chaska@localhost:5434/chaska?schema=public"
 #
-# 5433 rather than 5432 because a native Postgres install commonly holds 5432,
-# and two servers on one port fail in a way that reads like a bad password.
+# 5434 rather than 5432/5433 so this never collides with a native Postgres
+# install (5432) or a minto dev stack running alongside it (5433).
 services:
   postgres:
     # postgis, not plain postgres: delivery zones are polygons and zone lookup
     # is a containment query the database answers.
     image: postgis/postgis:16-3.4
-    container_name: minto-pg
+    container_name: chaska-pg
     environment:
-      POSTGRES_USER: minto
-      POSTGRES_PASSWORD: minto
-      POSTGRES_DB: minto
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
+      POSTGRES_DB: chaska
     ports:
-      - '5433:5432'
+      - '5434:5432'
     volumes:
-      - minto-pgdata:/var/lib/postgresql/data
+      - chaska-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U minto -d minto']
+      test: ['CMD-SHELL', 'pg_isready -U chaska -d chaska']
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  minto-pgdata:
+  chaska-pgdata:

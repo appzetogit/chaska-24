@@ -5,3 +5,7 @@ temp_interactive_push.bat
 
 # Local copy of the deployed nginx site config — not part of the app.
 suvio-api.conf
+
+# Quarantined malicious file found in Backend/api.js — kept locally for
+# forensics, never committed.
+/scratch/quarantine/
