@@ -143,7 +143,7 @@ export default function RestaurantBusinessEditor({ restaurant, onSaved }) {
       }
 
       for (const [key, file] of Object.entries(files)) {
-        const res = await uploadAPI.uploadMedia(file, { folder: "minto/restaurant/documents" })
+        const res = await uploadAPI.uploadMedia(file, { folder: "chaska/restaurant/documents" })
         const media = res?.data?.data?.file || res?.data?.data || res?.data?.file
         if (!media?.url) throw new Error(`Could not upload the ${key}`)
         payload[key] = media.url

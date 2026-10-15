@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 
 // Set before the module loads: the bucket host list is read at call time, but
 // keeping this first matches how the server is configured in production.
-process.env.UPLOAD_S3_BUCKET = 'minto-media';
+process.env.UPLOAD_S3_BUCKET = 'chaska-media';
 process.env.UPLOAD_S3_REGION = 'ap-south-1';
 
 const { normalizeMediaUrlForStorage: normalize } = await import('./storage.service.js');
 
-const KEY = 'https://minto-media.s3.ap-south-1.amazonaws.com/minto/restaurant/profile/1-a.webp';
+const KEY = 'https://chaska-media.s3.ap-south-1.amazonaws.com/chaska/restaurant/profile/1-a.webp';
 
 test('drops the signature from one of our own signed urls', () => {
     const signed = `${KEY}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=deadbeef&X-Amz-Expires=3600`;
@@ -30,8 +30,8 @@ test('still strips localhost from an /uploads path', () => {
 
 test('still fixes a single-slash protocol', () => {
     assert.equal(
-        normalize('https:/minto-media.s3.ap-south-1.amazonaws.com/x.webp'),
-        'https://minto-media.s3.ap-south-1.amazonaws.com/x.webp',
+        normalize('https:/chaska-media.s3.ap-south-1.amazonaws.com/x.webp'),
+        'https://chaska-media.s3.ap-south-1.amazonaws.com/x.webp',
     );
 });
 

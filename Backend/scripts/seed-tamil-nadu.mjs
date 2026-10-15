@@ -193,7 +193,7 @@ for (const [i, r] of RESTAURANTS.entries()) {
     const data = {
         restaurantName: r.name,
         ownerName: `${r.cityName} Owner`,
-        ownerEmail: `owner.${r.phone}@mintofood.com`,
+        ownerEmail: `owner.${r.phone}@chaska.com`,
         ownerPhone: r.phone,
         primaryContactNumber: r.phone,
         ...derived,

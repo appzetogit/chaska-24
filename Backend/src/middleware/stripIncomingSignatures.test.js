@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-process.env.UPLOAD_S3_BUCKET ||= 'minto-media';
+process.env.UPLOAD_S3_BUCKET ||= 'chaska-media';
 process.env.UPLOAD_S3_REGION ||= 'ap-south-1';
 
 const { stripIncomingSignatures } = await import('./stripIncomingSignatures.js');
@@ -12,7 +12,7 @@ const { stripIncomingSignatures } = await import('./stripIncomingSignatures.js')
  * what it catches.
  */
 
-const BARE = 'https://minto-media.s3.ap-south-1.amazonaws.com/food/categories/1789460000-a1.webp';
+const BARE = 'https://chaska-media.s3.ap-south-1.amazonaws.com/food/categories/1789460000-a1.webp';
 const SIGNED = `${BARE}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=3600&X-Amz-Signature=deadbeef`;
 
 const run = (body) => {

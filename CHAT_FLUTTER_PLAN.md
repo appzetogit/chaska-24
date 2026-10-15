@@ -172,7 +172,7 @@ Not needed by the mobile apps; listed so the shapes below make sense.
   "orderId": null,
   "senderRole": "ADMIN",
   "senderId": "6a6326b337e4b194f018adea",
-  "senderName": "Minto Foods Admin",
+  "senderName": "Chaska Admin",
   "recipientRole": "USER",
   "recipientId": "6a63…",
   "text": "",
@@ -288,7 +288,7 @@ One shared package, three thin wrappers — the difference between the apps is w
 send and where the entry point lives.
 
 ```
-packages/minto_chat/
+packages/chaska_chat/
   lib/
     src/
       chat_api.dart          // the REST calls above

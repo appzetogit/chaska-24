@@ -171,7 +171,7 @@ export default function UpdateBankDetails() {
       alert(
         request?.status === "unchanged"
           ? "These are already your payout details."
-          : "Sent for approval. Payouts keep going to your current account until the Minto team approves the change.",
+          : "Sent for approval. Payouts keep going to your current account until the Chaska team approves the change.",
       )
     } catch (error) {
       alert(error?.response?.data?.message || "Failed to update bank details")

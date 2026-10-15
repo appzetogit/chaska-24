@@ -1,8 +1,8 @@
 {
-  "name": "minto-backend",
+  "name": "chaska-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Minto Foods Product Backend",
+  "description": "Chaska Product Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

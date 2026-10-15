@@ -4,7 +4,7 @@
 #   export DATABASE_URL="postgresql://chaska:chaska@localhost:5434/chaska?schema=public"
 #
 # 5434 rather than 5432/5433 so this never collides with a native Postgres
-# install (5432) or a minto dev stack running alongside it (5433).
+# install (5432) or a chaska dev stack running alongside it (5433).
 services:
   postgres:
     # postgis, not plain postgres: delivery zones are polygons and zone lookup

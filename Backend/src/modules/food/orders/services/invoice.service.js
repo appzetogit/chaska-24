@@ -130,7 +130,7 @@ export const buildInvoice = ({ order, business = null } = {}) => {
 
         // Who sold the delivery.
         platform: {
-            name: text(business?.companyName) || 'Minto Foods',
+            name: text(business?.companyName) || 'Chaska',
             address: [business?.address, business?.state, business?.pincode]
                 .map(text).map((s) => s.trim()).filter(Boolean).join(', '),
             email: text(business?.email) || null,

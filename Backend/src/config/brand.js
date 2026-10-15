@@ -3,7 +3,7 @@
  *
  * It was another brand's image on a free third-party host -- left over from the
  * codebase this platform was forked from, and shown on every order push a
- * Minto customer, restaurant or rider received. It is now the Minto logo from
+ * Chaska customer, restaurant or rider received. It is now the Chaska logo from
  * our own bucket, which is publicly readable so a phone can fetch it when the
  * notification arrives.
  *
@@ -11,4 +11,4 @@
  */
 export const BRAND_IMAGE_URL =
     process.env.PUSH_BRAND_IMAGE_URL
-    || 'https://minto-media.s3.ap-south-1.amazonaws.com/business/logos/minto-logo.webp';
+    || 'https://chaska-media.s3.ap-south-1.amazonaws.com/business/logos/chaska-logo.webp';

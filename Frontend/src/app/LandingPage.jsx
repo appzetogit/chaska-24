@@ -10,10 +10,10 @@ import {
 import { APP_CONFIG } from "../config/constants"; // Adjust path if needed
 import apiClient, { restaurantAPI } from "../services/api";
 
-// Minto's own store listings and social pages. Empty until they are published:
+// Chaska's own store listings and social pages. Empty until they are published:
 // a missing link renders as "Coming soon" instead of sending people somewhere
 // else. These used to point at another company's apps and accounts, left over
-// from the codebase Minto was built from.
+// from the codebase Chaska was built from.
 const STORE_LINKS = {
   customer: { ios: "", android: "" },
   restaurant: { ios: "", android: "" },
@@ -72,7 +72,7 @@ export default function LandingPage() {
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
   const [isDeliveryOpen, setIsDeliveryOpen] = useState(false);
   const [supportContact, setSupportContact] = useState({
-    email: "support@mintofood.com",
+    email: "support@chaska.com",
     mobile: "1-800-123-4567"
   });
   const [leadForm, setLeadForm] = useState({
@@ -95,7 +95,7 @@ export default function LandingPage() {
         const data = response?.data?.data || response?.data;
         if (data && (data.email || data.mobile)) {
           setSupportContact({
-            email: data.email || "support@mintofood.com",
+            email: data.email || "support@chaska.com",
             mobile: data.mobile || "1-800-123-4567"
           });
         }
@@ -275,14 +275,14 @@ export default function LandingPage() {
               </div>
               <div className="overflow-hidden pb-4">
                 <motion.div custom={2} initial="hidden" animate="visible" variants={textReveal} className="flex items-center gap-4 lg:gap-8">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#008078] to-pink-600">MINTO FOODS?</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#008078] to-pink-600">CHASKA?</span>
                 </motion.div>
               </div>
             </h1>
 
             <div className="overflow-hidden mt-4 lg:mt-6 max-w-xl">
               <motion.p custom={3} initial="hidden" animate="visible" variants={textReveal} className="text-base lg:text-lg text-slate-600 font-light leading-relaxed">
-                Minto Foods is a next-generation food delivery platform built with a mission to create fairness and transparency in the food ecosystem. We give restaurant partners transparent, flexible billing: a per-order commission or a fixed monthly plan, so they always know what they pay.
+                Chaska is a next-generation food delivery platform built with a mission to create fairness and transparency in the food ecosystem. We give restaurant partners transparent, flexible billing: a per-order commission or a fixed monthly plan, so they always know what they pay.
               </motion.p>
             </div>
 
@@ -345,13 +345,13 @@ export default function LandingPage() {
 
           <div className="space-y-8">
             <span className="inline-block text-xs font-black tracking-[0.3em] text-[#008078] uppercase bg-pink-50 border border-pink-100 rounded-full px-3 py-1">
-              About Minto Foods
+              About Chaska
             </span>
             <h3 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight text-slate-900">
               Empowering partners, <br /><span className="italic text-slate-500 font-light">restoring trust.</span>
             </h3>
             <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-light max-w-lg">
-              Minto Foods offers restaurants a choice of billing: a per-order commission, or a fixed monthly subscription instead. We believe in creating a balanced, fair, and growth-oriented food ecosystem.
+              Chaska offers restaurants a choice of billing: a per-order commission, or a fixed monthly subscription instead. We believe in creating a balanced, fair, and growth-oriented food ecosystem.
             </p>
             <div className="pt-2">
               <button
@@ -781,7 +781,7 @@ export default function LandingPage() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-500 italic font-light">Operating.</span>
               </h3>
               <p className="text-lg text-slate-600 font-light leading-relaxed">
-                Starting our journey from <strong>Indore</strong>, Minto Foods is engineered to scale across India, specifically focusing on empowering Tier-2 and Tier-3 cities.
+                Starting our journey from <strong>Indore</strong>, Chaska is engineered to scale across India, specifically focusing on empowering Tier-2 and Tier-3 cities.
               </p>
             </div>
 
@@ -848,8 +848,8 @@ export default function LandingPage() {
               {/* The Map Graph Wrapper with Masked Image and Premium Overlays */}
               <div className="relative z-10 flex-1 flex items-center justify-center py-4 overflow-hidden select-none pointer-events-none">
                 <img 
-                  src="/india-map-operations-minto.jpg" 
-                  alt="Minto Foods Operational Map" 
+                  src="/india-map-operations-chaska.jpg" 
+                  alt="Chaska Operational Map" 
                   className="w-full h-full object-contain filter brightness-110 contrast-105 saturate-110 transform scale-[1.18]"
                   style={{
                     maskImage: 'radial-gradient(circle at center, black 65%, transparent 100%)',
@@ -1040,7 +1040,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-5 text-sm font-medium">
               <h4 className="text-slate-900 font-bold tracking-widest text-xs uppercase mb-1">Legal</h4>
               <a 
-                href="https://admin.mintofood.com/food/user/profile/privacy" 
+                href="https://admin.chaska.com/food/user/profile/privacy" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-[#008078] transition-colors"
@@ -1048,7 +1048,7 @@ export default function LandingPage() {
                 Privacy Policy
               </a>
               <a 
-                href="https://admin.mintofood.com/food/user/profile/terms" 
+                href="https://admin.chaska.com/food/user/profile/terms" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-[#008078] transition-colors"
@@ -1060,7 +1060,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-5 text-sm font-medium">
               <h4 className="text-slate-900 font-bold tracking-widest text-xs uppercase mb-1">Company</h4>
               <a 
-                href="https://admin.mintofood.com/food/user/profile/about" 
+                href="https://admin.chaska.com/food/user/profile/about" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-[#008078] transition-colors"
@@ -1068,7 +1068,7 @@ export default function LandingPage() {
                 About Us
               </a>
               <a 
-                href="https://admin.mintofood.com/food/user/profile/help-content" 
+                href="https://admin.chaska.com/food/user/profile/help-content" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-[#008078] transition-colors"
@@ -1112,7 +1112,7 @@ export default function LandingPage() {
             {/* Sticky Header */}
             <header className="sticky top-0 w-full z-50 px-6 py-6 md:px-12 lg:px-20 flex items-center justify-between bg-[#FCFBFA]/80 backdrop-blur-md border-b border-slate-200/40 shrink-0">
               <div className="text-2xl font-black text-slate-900 tracking-tighter">
-                {APP_CONFIG?.NAME || "Minto Foods"}
+                {APP_CONFIG?.NAME || "Chaska"}
                 <span className="text-[#008078]">.</span>
               </div>
               <button
@@ -1137,7 +1137,7 @@ export default function LandingPage() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-500 italic font-light">in the Food Ecosystem.</span>
                 </h1>
                 <p className="text-xl text-slate-600 font-light leading-relaxed">
-                  Minto Foods is built with a mission to create a sustainable, transparent, and balanced environment for both food merchants and consumers across India.
+                  Chaska is built with a mission to create a sustainable, transparent, and balanced environment for both food merchants and consumers across India.
                 </p>
               </div>
 
@@ -1146,7 +1146,7 @@ export default function LandingPage() {
                 <div className="absolute top-[-50%] right-[-10%] w-[350px] h-[350px] bg-[#008078]/20 rounded-full blur-[90px] pointer-events-none" />
                 <div className="relative z-10 space-y-6">
                   <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed italic text-slate-100 max-w-4xl">
-                    "Minto Foods isn’t just a food delivery app—it’s a movement towards fair business, trust, and transparency."
+                    "Chaska isn’t just a food delivery app—it’s a movement towards fair business, trust, and transparency."
                   </p>
                   <div className="w-16 h-1 bg-[#008078] rounded-full" />
                   <p className="text-xs uppercase tracking-widest font-bold text-slate-400">Our Core Philosophy</p>
@@ -1181,7 +1181,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Trust & Transparent Pricing</h3>
                     <p className="text-slate-600 font-light leading-relaxed">
-                      By offering transparent pricing, Minto Foods ensures customers pay genuine prices without hidden markups. We are building long-term relationships of trust with both restaurants and consumers.
+                      By offering transparent pricing, Chaska ensures customers pay genuine prices without hidden markups. We are building long-term relationships of trust with both restaurants and consumers.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-3">
@@ -1198,7 +1198,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Indore to Tier 2 & 3 Cities</h3>
                     <p className="text-slate-600 font-light leading-relaxed">
-                      Minto Foods is starting its journey from Indore, with a strategic focus on expanding across Tier 2 and Tier 3 cities in India. We aim to empower local businesses in these growing regions and integrate them into the digital market.
+                      Chaska is starting its journey from Indore, with a strategic focus on expanding across Tier 2 and Tier 3 cities in India. We aim to empower local businesses in these growing regions and integrate them into the digital market.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-3">
@@ -1215,7 +1215,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Founded by Visionaries</h3>
                     <p className="text-slate-600 font-light leading-relaxed">
-                      Minto Foods was founded by two passionate 23-year-old entrepreneurs driven by a vision to revolutionize the food delivery industry and create a more balanced, fair, and growth-oriented platform for all stakeholders.
+                      Chaska was founded by two passionate 23-year-old entrepreneurs driven by a vision to revolutionize the food delivery industry and create a more balanced, fair, and growth-oriented platform for all stakeholders.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-3">
@@ -1230,7 +1230,7 @@ export default function LandingPage() {
               <div className="text-center py-12 md:py-20 border-t border-slate-200/60 flex flex-col items-center gap-6 shrink-0">
                 <h3 className="text-3xl md:text-4xl font-black text-slate-900">Be Part of the Movement</h3>
                 <p className="text-slate-500 max-w-lg font-light">
-                  Support your local neighborhood restaurants. Join Minto Foods today as a customer or partner and help us create a fair ecosystem.
+                  Support your local neighborhood restaurants. Join Chaska today as a customer or partner and help us create a fair ecosystem.
                 </p>
                 <div className="flex gap-4 mt-2">
                   <button
@@ -1246,7 +1246,7 @@ export default function LandingPage() {
 
             {/* Simple Footer */}
             <footer className="bg-slate-50 border-t border-slate-200/50 py-8 text-center text-xs text-slate-400 font-medium shrink-0">
-              <p>© 2026 {APP_CONFIG?.NAME || "Minto Foods"} Technologies Inc. All rights reserved.</p>
+              <p>© 2026 {APP_CONFIG?.NAME || "Chaska"} Technologies Inc. All rights reserved.</p>
             </footer>
           </motion.div>
         )}
@@ -1267,7 +1267,7 @@ export default function LandingPage() {
             {/* Sticky Header */}
             <header className="sticky top-0 w-full z-50 px-4 py-4 md:px-12 lg:px-20 flex items-center justify-between bg-[#FAF7F2]/90 backdrop-blur-md border-b border-slate-200/40 shrink-0">
               <div className="text-xl md:text-2xl font-black text-slate-900 tracking-tighter">
-                {APP_CONFIG?.NAME || "Minto Foods"}
+                {APP_CONFIG?.NAME || "Chaska"}
                 <span className="text-[#008078]">.</span>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
@@ -1303,7 +1303,7 @@ export default function LandingPage() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#008078] to-[#E02477] font-extrabold italic font-light">Pay the Way That Suits You.</span>
                 </h1>
                 <p className="text-xl text-slate-700 font-light leading-relaxed max-w-3xl mx-auto">
-                  With Minto Foods, you gain access to a powerful digital ordering system with <strong>flexible billing</strong>: a per-order commission, or a fixed monthly plan instead.
+                  With Chaska, you gain access to a powerful digital ordering system with <strong>flexible billing</strong>: a per-order commission, or a fixed monthly plan instead.
                 </p>
               </div>
 
@@ -1395,7 +1395,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Instant Daily Settlements</h3>
                     <p className="text-slate-600 font-light leading-relaxed">
-                      Say goodbye to frustrating weekly payout cycles that lock up your operating capital. Minto Foods processes bank settlements daily, keeping your cash flow running smoothly.
+                      Say goodbye to frustrating weekly payout cycles that lock up your operating capital. Chaska processes bank settlements daily, keeping your cash flow running smoothly.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-200/50 flex items-center gap-3">
@@ -1445,7 +1445,7 @@ export default function LandingPage() {
                 <div className="text-center mb-10">
                   <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Become a Restaurant Partner</h3>
                   <p className="text-slate-600 max-w-lg font-light text-sm md:text-base mx-auto mt-3">
-                    Fill out the form below to register your interest, and our onboarding team will contact you to set up your restaurant on Minto Foods.
+                    Fill out the form below to register your interest, and our onboarding team will contact you to set up your restaurant on Chaska.
                   </p>
                 </div>
 
@@ -1460,7 +1460,7 @@ export default function LandingPage() {
                     </div>
                     <h4 className="text-xl font-bold text-slate-900">Application Submitted Successfully!</h4>
                     <p className="text-sm text-slate-600 max-w-md mx-auto">
-                      Thank you for choosing Minto Foods. Our onboarding representative will get in touch with you shortly to finalize your registration.
+                      Thank you for choosing Chaska. Our onboarding representative will get in touch with you shortly to finalize your registration.
                     </p>
                     <button
                       onClick={() => setLeadSuccess(false)}
@@ -1564,7 +1564,7 @@ export default function LandingPage() {
 
             {/* Simple Footer */}
             <footer className="bg-slate-50 border-t border-slate-200/50 py-8 text-center text-xs text-slate-400 font-medium shrink-0">
-              <p>© 2026 {APP_CONFIG?.NAME || "Minto Foods"} Technologies Inc. All rights reserved.</p>
+              <p>© 2026 {APP_CONFIG?.NAME || "Chaska"} Technologies Inc. All rights reserved.</p>
             </footer>
           </motion.div>
         )}
@@ -1585,7 +1585,7 @@ export default function LandingPage() {
             {/* Sticky Cyber Header */}
             <header className="sticky top-0 w-full z-50 px-6 py-6 md:px-12 lg:px-20 flex items-center justify-between bg-[#07080B]/90 backdrop-blur-md border-b border-slate-800/80 shrink-0">
               <div className="text-2xl font-black text-white tracking-tighter">
-                {APP_CONFIG?.NAME || "Minto Foods"}
+                {APP_CONFIG?.NAME || "Chaska"}
                 <span className="text-[#008078]">.</span>
               </div>
               <button
@@ -1610,7 +1610,7 @@ export default function LandingPage() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#008078] to-indigo-400 font-extrabold italic font-light">Earn More & Cash Out Faster.</span>
                 </h1>
                 <p className="text-xl text-slate-400 font-light leading-relaxed max-w-3xl mx-auto">
-                  Join the elite squad of Minto Foods Captains. Secure the most competitive distance-based payout structure, absolute route clarity, weekly settlements, and <strong>keep 100% of your customer tips</strong>.
+                  Join the elite squad of Chaska Captains. Secure the most competitive distance-based payout structure, absolute route clarity, weekly settlements, and <strong>keep 100% of your customer tips</strong>.
                 </p>
               </div>
 
@@ -1706,7 +1706,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Keep 100% Customer Tips</h3>
                     <p className="text-slate-400 font-light leading-relaxed">
-                      Every single rupee that a grateful customer tips you belongs entirely to you. Minto Foods takes zero cuts from your extra rewards. Honest payouts, guaranteed.
+                      Every single rupee that a grateful customer tips you belongs entirely to you. Chaska takes zero cuts from your extra rewards. Honest payouts, guaranteed.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-800/60 flex items-center gap-3">
@@ -1740,7 +1740,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Fast Weekly Wallet Payouts</h3>
                     <p className="text-slate-400 font-light leading-relaxed">
-                      Never wait weeks to enjoy your hard-earned rewards. Minto Foods settles your total earnings straight into your active digital wallet every single week, cleanly and securely.
+                      Never wait weeks to enjoy your hard-earned rewards. Chaska settles your total earnings straight into your active digital wallet every single week, cleanly and securely.
                     </p>
                   </div>
                   <div className="mt-8 pt-6 border-t border-slate-800/60 flex items-center gap-3">
@@ -1770,7 +1770,7 @@ export default function LandingPage() {
 
               {/* Bottom Call to Action */}
               <div className="text-center py-12 md:py-20 border-t border-slate-800/80 flex flex-col items-center gap-6 shrink-0">
-                <h3 className="text-3xl md:text-4xl font-black text-white">Start Earning with Minto Foods</h3>
+                <h3 className="text-3xl md:text-4xl font-black text-white">Start Earning with Chaska</h3>
                 <p className="text-slate-400 max-w-lg font-light text-sm md:text-base">
                   Get on the road and empower the local neighborhood restaurant ecosystem while securing premium distance-based earnings.
                 </p>
@@ -1788,7 +1788,7 @@ export default function LandingPage() {
 
             {/* Simple Footer */}
             <footer className="bg-slate-950 border-t border-slate-900 py-8 text-center text-xs text-slate-505 font-medium shrink-0">
-              <p>© 2026 {APP_CONFIG?.NAME || "Minto Foods"} Technologies Inc. All rights reserved.</p>
+              <p>© 2026 {APP_CONFIG?.NAME || "Chaska"} Technologies Inc. All rights reserved.</p>
             </footer>
           </motion.div>
         )}

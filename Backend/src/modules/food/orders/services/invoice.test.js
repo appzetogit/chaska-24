@@ -145,8 +145,8 @@ test('a bill that does not reconcile admits it', () => {
 });
 
 test('the business name falls back rather than rendering an empty header', () => {
-    assert.equal(buildInvoice({ order: order() }).platform.name, 'Minto Foods');
-    assert.equal(buildInvoice({ order: order(), business: { companyName: 'Minto Pvt Ltd' } }).platform.name, 'Minto Pvt Ltd');
+    assert.equal(buildInvoice({ order: order() }).platform.name, 'Chaska');
+    assert.equal(buildInvoice({ order: order(), business: { companyName: 'Chaska Pvt Ltd' } }).platform.name, 'Chaska Pvt Ltd');
 });
 
 test('a name with html in it cannot break out into markup', () => {
