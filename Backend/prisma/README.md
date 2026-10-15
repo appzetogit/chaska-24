@@ -3,11 +3,32 @@
 Postgres 16 + PostGIS. Prisma owns the schema; a few things it cannot express
 live in `constraints.sql` and are appended to the init migration.
 
-## Running the database without Docker
+## Local setup (native Postgres, no Docker)
 
-Docker Desktop on Windows needs a service that only starts elevated, and it
-stopped itself repeatedly during this work — roughly ten times in one session,
-sometimes mid-test-run. WSL runs the same Postgres without any of that.
+This project runs against a native PostgreSQL install — no Docker.
+
+1. Install PostgreSQL 16 (e.g. `winget install PostgreSQL.PostgreSQL.16` on
+   Windows, or your platform's package manager).
+2. Install the PostGIS extension for that install — zones store a
+   `geography(Polygon)` column and zone lookup is a containment query the
+   database answers directly.
+3. Create the role and database:
+
+```sql
+CREATE ROLE chaska LOGIN PASSWORD 'chaska' SUPERUSER;
+CREATE DATABASE chaska OWNER chaska;
+\c chaska
+CREATE EXTENSION postgis;
+```
+
+```
+DATABASE_URL="postgresql://chaska:chaska@localhost:5432/chaska?schema=public"
+```
+
+### Alternative: Postgres inside WSL
+
+If a native Windows Postgres service is inconvenient, WSL runs the same
+Postgres without it:
 
 ```bash
 wsl -d Ubuntu -- sudo apt-get install -y postgresql postgis postgresql-16-postgis-3
@@ -19,34 +40,14 @@ wsl -d Ubuntu -- sudo -u postgres psql -d chaska -c 'CREATE EXTENSION postgis;'
 Then set `listen_addresses = '*'` and `port = 5434` in
 `/etc/postgresql/16/main/postgresql.conf`, add
 `host all all 0.0.0.0/0 scram-sha-256` to `pg_hba.conf`, and restart with
-`wsl -d Ubuntu -- sudo service postgresql restart`.
-
-5434 because Windows already has a native Postgres on 5432 and the Docker
-container used 5433. WSL2 forwards localhost, so from Windows:
+`wsl -d Ubuntu -- sudo service postgresql restart`. WSL2 forwards localhost, so
+from Windows:
 
 ```
 DATABASE_URL="postgresql://chaska:chaska@localhost:5434/chaska?schema=public"
 ```
 
-`wsl -d Ubuntu -- sudo service postgresql start` after a reboot. The container
-in docker-compose.yml still works when Docker is behaving; this is the fallback
-that does not depend on it.
-
-## Local setup
-
-```bash
-docker run -d --name chaska-pg \
-  -e POSTGRES_USER=chaska -e POSTGRES_PASSWORD=chaska -e POSTGRES_DB=chaska \
-  -p 5433:5432 postgis/postgis:16-3.4
-```
-
-Port **5433**, not 5432 — a native Postgres service commonly already holds 5432
-on Windows, and it answers first, which surfaces as a confusing
-`P1000: Authentication failed` rather than a connection refusal.
-
-```
-DATABASE_URL="postgresql://chaska:chaska@localhost:5433/chaska?schema=public"
-```
+`wsl -d Ubuntu -- sudo service postgresql start` after a reboot.
 
 ### Planner tuning
 

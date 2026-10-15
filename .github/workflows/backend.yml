@@ -20,7 +20,8 @@ jobs:
 
     services:
       postgres:
-        # postgis, matching docker-compose.yml: delivery zones are polygons.
+        # postgis: delivery zones are polygons and zone lookup is a
+        # containment query the database answers directly.
         image: postgis/postgis:16-3.4
         env:
           POSTGRES_USER: chaska

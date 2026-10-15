@@ -34,8 +34,8 @@ if (!process.env.DATABASE_URL) {
     fail(
         'DATABASE_URL is not set, and these tests run against a real Postgres.',
         [
-            '  docker compose up -d          (or see Backend/prisma/README.md)',
-            '  export DATABASE_URL="postgresql://chaska:chaska@localhost:5433/chaska?schema=public"',
+            '  See Backend/prisma/README.md for local setup.',
+            '  export DATABASE_URL="postgresql://chaska:chaska@localhost:5432/chaska?schema=public"',
         ].join('\n'),
     );
 }
