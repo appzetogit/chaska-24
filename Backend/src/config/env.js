@@ -106,19 +106,13 @@ export const config = {
 
     // Storage (local VPS — legacy Cloudinary env vars no longer required)
 
-    // Firebase / FCM
+    // Firebase / FCM — backend only needs the admin SDK side (service account,
+    // project id, realtime DB url). The web SDK config (API key, app id, ...)
+    // belongs to Frontend's own VITE_ env and is never read here.
     firebaseProjectId: process.env.FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID,
-    firebaseDatabaseUrl: process.env.VITE_FIREBASE_DATABASE_URL,
+    firebaseDatabaseUrl: process.env.FIREBASE_DATABASE_URL || process.env.VITE_FIREBASE_DATABASE_URL,
     firebaseServiceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
     firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
-    firebaseWebApiKey: process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY,
-    firebaseWebAuthDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.FIREBASE_AUTH_DOMAIN,
-    firebaseWebStorageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || process.env.FIREBASE_STORAGE_BUCKET,
-    firebaseWebMessagingSenderId:
-        process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || process.env.FIREBASE_MESSAGING_SENDER_ID,
-    firebaseWebAppId: process.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
-    firebaseWebMeasurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID || process.env.FIREBASE_MEASUREMENT_ID,
-    firebaseWebVapidKey: process.env.VITE_FIREBASE_VAPID_KEY || process.env.FIREBASE_VAPID_KEY,
 
     // Google Maps (Directions / Distance for delivery routing)
     googleMapsApiKey:
