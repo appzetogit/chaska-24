@@ -1,261 +1,120 @@
-# Go live on chaska.com
-
-Target host: EC2 `chaska-server` (`i-0da155967af299582`), `3.110.207.151`,
-ap-south-1. Ubuntu 26.04, 1 vCPU, 2 GB RAM, 8 GB EBS.
-
-| Host                      | Serves                    | Backed by                              |
-| ------------------------- | ------------------------- | -------------------------------------- |
-| `api.chaska.com`       | prod API + socket + files | PM2 `chaska-*`, ports 5000/5001    |
-| `admin.chaska.com`     | prod web app (SPA)        | static build in `/srv/chaska/admin`     |
-| `uat.api.chaska.com`   | UAT API + socket + files  | PM2 `uat-chaska-*`, ports 5100/5101     |
-| `uat.admin.chaska.com` | UAT web app (SPA)         | static build in `/srv/chaska-uat/admin` |
-
-The repo is checked out at `/var/www`. Served content lives under `/srv`
-instead: serving out of a working tree exposes `.git` to anyone who guesses
-the path, and a redeploy that touches the tree would take the uploads with it.
-
-## Done
-
-- Swap (1 GB) added — 2 GB RAM with none OOM-kills the Vite build.
-- nginx reverse proxy for all four hosts, installed and validated. The stock
-  `default_server` is removed, so the bare IP no longer answers.
-- certbot 4.0.0 installed.
-- Frontend built and deployed to `/srv/chaska/admin`, with
-  `https://api.chaska.com/api/v1` baked in.
-- `Backend/.env` written with generated JWT secrets, CORS, and upload paths.
-- TLS live on all four hosts, renewing over DNS-01, dry run passing.
-- Production origin refuses requests that did not come through Cloudflare.
-- Rebranded to Chaska; `admin.chaska.com/` lands on `/admin`.
+# Go live on chaska24by7.com
 
-## Blocked
+Target host: single VM, `187.127.151.210` (root access over SSH key
+`~/.ssh/chaska_deploy` on the deploying machine). Ubuntu 26.04, 2 vCPU, 7.7 GB
+RAM, 95 GB disk.
 
-- **No database password.** The RDS instance exists and port 5432 is reachable
-  from this box, but `DATABASE_URL` is empty, so the backend will not start.
-  The console offers an IAM auth token; those expire every 15 minutes and
-  cannot back a long-lived pool. It needs a password user. See section 4.
-- **Third-party credentials not supplied.** The server refuses to boot in
-  production without them, by design: SMS India Hub (no OTP means nobody can
-  log in), Razorpay including the webhook secret (without it customers are
-  charged and orders never confirm), and a Firebase service account
-  (without it restaurants are never told about new orders).
-- **Disk.** 1.2 GB free on an 8 GB volume with no unallocated space. Grow the
-  volume in the console before the database and uploads start filling it.
-
-## 1. DNS (client, in Cloudflare)
-
-    api.chaska.com          A   3.110.207.151
-    admin.chaska.com        A   3.110.207.151
-    uat.api.chaska.com      A   3.110.207.151
-    uat.admin.chaska.com    A   3.110.207.151
-
-Confirm before running certbot — it fails on a name that has not propagated:
-
-    dig +short api.chaska.com
-
-**Ask whether these are proxied (orange cloud) or DNS-only (grey).** Proxied,
-every request arrives from a Cloudflare edge address, `$remote_addr` stops
-being the visitor, and the API's rate limiting silently buckets the whole
-internet into a handful of IPs. If proxied, run
-`deploy/scripts/update-cloudflare-ips.sh` and set the Cloudflare SSL/TLS mode
-to **Full (strict)** — "Flexible" leaves Cloudflare→origin as plain HTTP.
-
-## 2. Origin access
-
-Ports 80 and 443 are open to the internet at the security group; 22 is
-restricted. Production is instead restricted **in nginx**, per vhost -- see
-"Restricting the origin" below for why a security group rule cannot do this
-while UAT is DNS-only.
-
-## 3. Certificates -- done
-
-Issued 2026-08-26, reissued over DNS-01 on 2026-08-31, expiring 2026-11-29.
-One certificate covers all four names. The vhosts in this repo stay HTTP-only
-on purpose: certbot owns the `listen 443 ssl` blocks and the redirects and
-rewrites them in `/etc/nginx/sites-enabled/` on renewal, so keeping a second
-copy here would guarantee the two drift apart.
+| Host                     | Serves                    | Backed by                        |
+| ------------------------ | -------------------------- | --------------------------------- |
+| `chaska24by7.com`, `www` | frontend SPA               | static build in `/srv/chaska/admin` |
+| `api.chaska24by7.com`    | API + socket + uploads     | PM2 `chaska-*`, ports 5000/5001   |
 
-### Renewal uses DNS-01, not HTTP-01
-
-Renewal revalidates every name on the certificate. Two of them are DNS-only, so
-under HTTP-01 Let's Encrypt had to reach the origin directly for those -- meaning
-any firewall allowing only Cloudflare would fail those two challenges and, since
-it is a single certificate, take production's TLS down with them. Around sixty
-days after the lockdown, with no symptom in the meantime.
-
-DNS-01 removes the inbound dependency: validation is a TXT record.
-
-    /root/.secrets/cloudflare.ini       mode 600, Cloudflare API token
-    authenticator = dns-cloudflare      in /etc/letsencrypt/renewal/
-    renew_hook = systemctl reload nginx
-
-The hook matters: `certonly` does not install, so without it a renewed
-certificate sits on disk while nginx keeps serving the old one. Check any change
-with `sudo certbot renew --dry-run`.
-
-To rotate the token, replace it in `cloudflare.ini` and re-run the dry run.
-Nothing else refers to it.
-
-### Restricting the origin to Cloudflare
-
-A security group cannot express this. Production and UAT share one instance and
-one pair of ports, and UAT is DNS-only by request, so a rule allowing only
-Cloudflare on 443 blocks UAT as well.
-
-It is done in nginx instead. `update-cloudflare-ips.sh` emits a `geo` block
-setting `$from_cloudflare` from `$realip_remote_addr` -- the address that opened
-the connection, since `$remote_addr` has by then been rewritten to the visitor --
-plus a guard snippet returning 403. Only the two production vhosts include it,
-through a wildcard, because the variable exists only once the generator has run
-and nginx will not start on an unknown one.
-
-Verified: direct to origin 403, through Cloudflare 200/302, UAT unaffected.
-
-This is application layer, so a direct connection still completes TCP and TLS
-before being refused -- weaker than a network block. Once UAT testing finishes
-and those hosts can be proxied or limited to office addresses, move it down to
-the security group, using a managed prefix list rather than forty raw rules.
-
-## 4. Database (RDS)
-
-Instance: `database-1-instance-1.cno8qkoa4p2p.ap-south-1.rds.amazonaws.com`.
-Port 5432 is reachable from the EC2 instance.
-
-    DATABASE_URL=postgresql://USER:PASS@HOST:5432/chaska?schema=public&sslmode=require
-
-    cd /var/www/Backend && npm run db:migrate
-
-Four things that will bite otherwise:
-
-- **Use password authentication, not IAM.** The console offers an
-  `rds generate-db-auth-token` snippet; those tokens expire after 15 minutes.
-  Prisma is handed one connection URL at startup and holds a pool open for the
-  life of the process, with no hook to re-sign a password, so an IAM-auth setup
-  works for one smoke test and then fails every reconnect. Give the app a
-  password user.
-- **Run the migration as the RDS master user.** The first migration issues
-  `CREATE EXTENSION postgis`, `pgcrypto` and `btree_gist`; a plain application
-  user has no privilege to do that and the migration fails partway through.
-- **`sslmode=require` is not optional.** RDS presents a TLS certificate but
-  Prisma will not negotiate TLS unless asked, and with `rds.force_ssl` set the
-  connection is simply refused.
-- **`npm run db:migrate` is three steps, not one** -- `prisma migrate deploy`,
-  then `prisma/apply-constraints.mjs`, then `prisma generate`. The middle step
-  is not optional: the money guards, the geography sync triggers and every GIN
-  and GIST index live in `constraints.sql`, because Prisma's schema language
-  cannot express them. Running only `migrate deploy` produces a schema that
-  looks correct and silently permits negative wallet balances.
+No AWS, no RDS, no S3, no Cloudflare. Postgres + PostGIS and Redis run on the
+same box as the app. Uploaded files are written to local disk
+(`/srv/chaska/uploads`) and served directly by nginx.
 
-The app also wants its own database rather than the default `postgres` one:
+The repo is checked out at `/var/www/chaska`. Served content lives under
+`/srv/chaska` instead — serving out of the working tree would expose `.git`
+and a redeploy that touches the tree would take the uploads with it.
 
-    CREATE DATABASE chaska;
+## Done (initial deploy)
 
-### Connection pool sizing
+- Node 22, PostgreSQL 18 + PostGIS, Redis, nginx, certbot, PM2 installed.
+- 2 GB swap added.
+- `ufw` enabled: OpenSSH, 80, 443 only.
+- Database `chaska` created, role `chaska` (password generated, see secrets
+  note below), `postgis` extension enabled, `random_page_cost` tuned to 1.1.
+- All 34 migrations + `constraints.sql` applied, Prisma client generated.
+- `Backend/.env` written for production: fresh JWT secrets and `DEPLOY_SECRET`,
+  the same SMS/Firebase/SMTP/Maps credentials already in use locally,
+  `CORS_ORIGINS` set to the two frontend hosts, `UPLOAD_STORAGE_ROOT=/srv/chaska/uploads`.
+- `Frontend/.env.production` written with `VITE_API_BASE_URL=https://api.chaska24by7.com/api/v1`.
+- nginx vhosts for both hosts, HTTP only (port 80) — certbot adds the 443
+  block and redirect once DNS resolves; see "TLS" below.
+- PM2 running `chaska-api` (cluster), `chaska-socket`, `chaska-scheduler`,
+  `chaska-worker-order`, `chaska-worker-tracking` (queues are on: Redis is
+  local). `pm2 startup` + `pm2 save` done, survives a reboot.
+- One super admin account seeded (see secrets note).
 
-Prisma opens one pool **per process**, and PM2 runs several, so
-`DATABASE_POOL_SIZE` is a per-process number that has to be multiplied out:
+## Not done yet — needs your input
 
-    processes x DATABASE_POOL_SIZE  <  max_connections - superuser reserve
+- **TLS.** Blocked on DNS (see below). nginx is serving plain HTTP right now.
+- **Razorpay is on TEST keys**, copied from local dev. Replace
+  `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET` in
+  `/var/www/chaska/Backend/.env` with live keys before accepting real payments,
+  then `pm2 reload chaska-api`.
+- **Mobile app links** (`ANDROID_PACKAGE_NAME`, `ANDROID_SHA256_FINGERPRINTS`,
+  store URLs) are blank — fill in when the apps exist.
 
-With queues off that is api (one per vCPU, `instances: 'max'`) + socket +
-scheduler = 3 on this box, so 3 x 20 = 60. `max_connections` on the small RDS
-classes is lower than people expect -- about 112 on a 1 GiB `db.t4g.micro`.
-Prisma's own default of 25 across five processes is 125, which would not fit.
-
-**Recompute after any instance resize.** More vCPUs means more API workers means
-more pools, and the failure mode is an opaque `pool_timeout` rather than a
-message about running out of connections.
-
-UAT needs its own database and Razorpay **test** keys. A UAT pointed at the
-production database takes real payments during a test run.
-
-## 4a. Load balancing and redundancy: what actually exists
-
-Worth stating plainly, because "load balanced" is doing less work here than it
-sounds:
-
-- **Within the box:** PM2 cluster mode balances across API workers and nginx
-  fronts them. On the current 1 vCPU instance `instances: 'max'` resolves to
-  **one** worker, so nothing is being balanced today. It starts working on a
-  larger instance with no config change.
-- **Across boxes: none.** One EC2, one nginx, one upstream -- a single point of
-  failure. Real redundancy means an ALB in front of two instances in separate
-  availability zones.
-- **Socket.IO is deliberately a single process** and cannot be clustered as-is.
-  Multiple socket processes need the Redis adapter, or a client lands on a
-  worker that does not hold its room and quietly stops receiving events.
-- **Queue workers are off** (`BULLMQ_ENABLED` unset, no Redis). The ecosystem
-  files leave them out of the process list while queues are disabled: started
-  anyway they exit immediately, and PM2 reads a clean exit as success and
-  restarts them forever.
-
-Before adding an ALB: point health checks at `/health`; the API is JWT-based so
-it needs no stickiness, but websockets need sticky sessions or the Redis adapter.
-
-## 4b. CORS
-
-The app and the API are on different hosts, so every browser request is
-cross-origin and `CORS_ORIGINS` decides whether it is allowed. It must list
-**every** origin the SPA is served from -- the apex and the admin host serve the
-same build, so both call the same API:
-
-    CORS_ORIGINS=https://chaska.com,https://www.chaska.com,https://admin.chaska.com,https://uat.admin.chaska.com
-
-Worth knowing how this fails, because the error points somewhere else: when the
-backend is down, nginx answers with its own 502 page, and that page carries no
-`Access-Control-Allow-Origin` header. The browser reports a CORS violation. The
-actual problem is that nothing is running -- check `/health` before touching the
-CORS list.
-
-## 4c. Uploads (S3)
-
-Media goes to the `chaska-media` bucket in ap-south-1, written by the EC2
-instance role -- no access keys anywhere. Set in `Backend/.env`:
-
-    UPLOAD_DRIVER=s3
-    UPLOAD_S3_BUCKET=chaska-media
-    UPLOAD_S3_REGION=ap-south-1
-    UPLOAD_BASE_URL=https://chaska-media.s3.ap-south-1.amazonaws.com
-
-`UPLOAD_DRIVER=local` switches back to disk; the code path is still there and
-nginx still serves `/uploads/` for anything written before the move.
-
-Two separate AWS settings are needed for customers to see the images, and
-turning off only the first leaves you with a 403 that looks like a broken
-policy: **Block Public Access off** removes the veto, and a **bucket policy**
-granting `s3:GetObject` on `arn:aws:s3:::chaska-media/*` is what actually
-grants the read. Neither works alone.
-
-Worth doing later: CloudFront in front of the bucket, on `cdn.chaska.com`.
-Cheaper egress and edge caching, and it needs no application change -- only a
-different `UPLOAD_BASE_URL`.
-
-## 5. Start
-
-    cd /var/www
-    pm2 start deploy/ecosystem.config.cjs
-    pm2 save && pm2 startup
-
-## 6. Verify
-
-    curl -sS https://api.chaska.com/health
-
-    # CORS: header present on the first, absent on the second
-    curl -sSI -H 'Origin: https://admin.chaska.com' https://api.chaska.com/api/v1/health
-    curl -sSI -H 'Origin: https://evil.example.com'    https://api.chaska.com/api/v1/health
-
-Then at `https://admin.chaska.com`: load `/admin`, sign in, open an order.
-The console should show a `/socket.io/` upgrade and no CORS or mixed-content
-errors, and images should load from `api.chaska.com/uploads/`.
-
-## Redeploying the frontend
-
-`VITE_*` values are inlined at build time — changing one means rebuilding, not
-restarting nginx.
-
-    cd /var/www/Frontend
-    NODE_OPTIONS=--max-old-space-size=1536 npm run build
-    # Use the script: it keeps the previous build's hashed chunks so tabs that
-    # are already open do not 404 on their next lazy route (a --delete sync here
-    # is what made the admin panel hard-reload on every sidebar click after a
-    # deploy). It also sets the heap size the 2 GB box needs to finish a build.
-    deploy/scripts/deploy-frontend.sh
+## 1. DNS
+
+Add these A records at your domain registrar / DNS provider, pointing at the
+server:
+
+    chaska24by7.com         A   187.127.151.210
+    www.chaska24by7.com     A   187.127.151.210
+    api.chaska24by7.com     A   187.127.151.210
+
+No proxy (no Cloudflare orange-cloud) — DNS-only, so certbot's HTTP-01
+challenge can reach the box directly. Confirm propagation before issuing
+certificates:
+
+    dig +short chaska24by7.com
+    dig +short api.chaska24by7.com
+
+## 2. TLS (run once DNS resolves)
+
+    ssh -i ~/.ssh/chaska_deploy root@187.127.151.210
+    certbot --nginx -d chaska24by7.com -d www.chaska24by7.com -d api.chaska24by7.com
+
+certbot edits the nginx vhosts in place (adds `listen 443 ssl` + redirect) and
+sets up auto-renewal via its own systemd timer — nothing else to configure.
+After it runs, update:
+
+    Backend/.env:              FRONTEND_URL, CORS_ORIGINS -> already https, no change needed
+    Frontend/.env.production:  VITE_API_BASE_URL, VITE_UPLOAD_BASE_URL -> already https, no change needed
+
+(Already written as `https://...` in both files, so TLS "just works" once
+certbot runs — no rebuild needed for that part.)
+
+## 3. Secrets
+
+Generated during setup, not in git. Written directly into `Backend/.env` on
+the server and given to you in chat — if you've lost them:
+
+    ssh -i ~/.ssh/chaska_deploy root@187.127.151.210
+    grep -E 'DATABASE_URL|JWT_|DEPLOY_SECRET' /var/www/chaska/Backend/.env
+
+To reset the admin password:
+
+    cd /var/www/chaska/Backend
+    ADMIN_EMAIL=admin@chaska24by7.com ADMIN_PASSWORD='new-password' node scripts/seed-admin.mjs
+
+## 4. Redeploying
+
+From the server:
+
+    bash /var/www/chaska/deploy/deploy.sh
+
+Pulls `main`, reinstalls backend deps, applies any new migrations, reloads
+PM2 with zero downtime, then builds and publishes the frontend (keeping the
+previous build's hashed chunks so open tabs don't 404 — see
+`deploy/scripts/deploy-frontend.sh`).
+
+## 5. Verify
+
+    curl -sS https://api.chaska24by7.com/health
+    curl -sSI -H 'Origin: https://chaska24by7.com' https://api.chaska24by7.com/api/v1/health
+
+Then load `https://chaska24by7.com`, sign in at `/admin` with the seeded
+account, open an order. The console should show a `/socket.io/` upgrade and
+no CORS or mixed-content errors, and images should load from
+`api.chaska24by7.com/uploads/` or `chaska24by7.com/uploads/`.
+
+## CORS
+
+    CORS_ORIGINS=https://chaska24by7.com,https://www.chaska24by7.com
+
+If this list is wrong the symptom is a browser CORS error, but check
+`/health` first — when the backend is down nginx's own 502 page carries no
+CORS header either, and that looks identical from the browser's console.
