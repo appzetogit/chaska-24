@@ -36,6 +36,18 @@ const IMG = [
 ].map((id) => `https://images.unsplash.com/photo-${id}?w=800&q=70&auto=format&fit=crop`);
 const img = (i) => IMG[i % IMG.length];
 
+// ── portrait photo pool, for delivery partner profile photos ─────────────────
+const PORTRAITS = [
+    '1472099645785-5658abf4ff4e', '1507003211169-0a1dd7228f2d', '1500648767791-00dcc994a43e',
+    '1494790108377-be9c29b29330', '1535713875002-d1d0cf377fde', '1506794778202-cad84cf45f1d',
+    '1544005313-94ddf0286df2', '1573497019940-1c28c88b4f3e', '1552058544-f2b08422138a',
+    '1517841905240-472988babdf9', '1531123897727-8f129e1688ce', '1566492031773-4f4e44671857',
+    '1519345182560-3f2917c472ef', '1506863530036-1efeddceb993', '1521572163474-6864f9cf17ab',
+    '1519085360753-af0119f7cbe7', '1558203728-00f45181dd84', '1601412436009-d964bd02edbc',
+    '1542909168-82c3e7fdca5c', '1580489944761-15a19d654956',
+].map((id) => `https://images.unsplash.com/photo-${id}?w=400&q=70&auto=format&fit=crop&crop=faces`);
+const portrait = (i) => PORTRAITS[i % PORTRAITS.length];
+
 // ── cities + zones ─────────────────────────────────────────────────────────
 const ZONES = [
     {
@@ -105,8 +117,8 @@ const DISHES = [
 ];
 
 const ADDON_TEMPLATES = [
-    ['Extra Cheese', 40, 'veg'], ['Butter Extra', 20, 'veg'], ['Cold Drink (250ml)', 40, 'veg'],
-    ['Raita', 30, 'veg'], ['Papad', 20, 'veg'], ['Extra Gravy', 50, 'veg'],
+    ['Extra Cheese', 40, 'veg', 3], ['Butter Extra', 20, 'veg', 10], ['Cold Drink (250ml)', 40, 'veg', 13],
+    ['Raita', 30, 'veg', 8], ['Papad', 20, 'veg', 16], ['Extra Gravy', 50, 'veg', 1],
 ];
 
 const CATEGORY_DEFS = [
@@ -287,8 +299,9 @@ for (const [zoneIdx, z] of ZONES.entries()) {
         }
 
         // Restaurant-wide add-ons (empty foodIds), already approved + published.
-        for (const [aName, aPrice, foodType] of ADDON_TEMPLATES) {
-            const draft = { name: aName, description: '', foodType, price: aPrice, image: '', images: [] };
+        for (const [aName, aPrice, foodType, imgIdx] of ADDON_TEMPLATES) {
+            const addonImage = img(imgIdx);
+            const draft = { name: aName, description: '', foodType, price: aPrice, image: addonImage, images: [addonImage] };
             const existingAddon = await prisma.foodAddon.findFirst({
                 where: { restaurantId: restaurant.id, draft: { path: ['name'], equals: aName } },
             });
@@ -322,6 +335,7 @@ for (const [zoneIdx, z] of ZONES.entries()) {
         const data = {
             name, phone, email: `${name.toLowerCase().replace(/\s+/g, '.')}@chaska24by7.com`,
             address: z.areas[i % z.areas.length], city: z.cityName, state: z.state,
+            profilePhoto: portrait(zoneIdx * 10 + i),
             vehicleType: i % 3 === 0 ? 'Bike' : 'Scooter',
             vehicleName: i % 3 === 0 ? 'Hero Splendor' : 'Honda Activa',
             vehicleNumber: `${z.cityName === 'Indore' ? 'MP09' : 'RJ14'}${String(1000 + zoneIdx * 10 + i)}`,
@@ -477,18 +491,23 @@ for (const [key, legal] of PAGES) {
         update: { legal: { ...legal, email: 'support@chaska24by7.com', mobile: '+91 9001000001' } },
     });
 }
+const ABOUT_DATA = {
+    appName: 'Chaska', version: '1.0.0', logo: '',
+    description: 'Chaska connects you with the best restaurants in Indore and Jaipur, delivering fresh food fast.',
+    // Shape required by the admin About Us editor (Frontend/.../settings/AboutUs.jsx):
+    // icon is one of Heart/Users/Shield/Clock/Star/Award, color+bgColor are Tailwind
+    // class pairs from its own colorOptions -- a plain string here renders as an
+    // empty card, which is what shipped before this fix.
+    features: [
+        { icon: 'Clock', title: 'Live Order Tracking', description: 'Watch your order move from the kitchen to your door in real time.', color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/30', order: 0 },
+        { icon: 'Shield', title: 'Multiple Payment Options', description: 'Pay by card, UPI, wallet or cash on delivery -- whatever is easiest.', color: 'text-green-600 dark:text-green-400', bgColor: 'bg-green-100 dark:bg-green-900/30', order: 1 },
+        { icon: 'Star', title: 'Exclusive Restaurant Offers', description: 'Regular discounts and coupons from your favourite restaurants.', color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30', order: 2 },
+    ],
+};
 await prisma.foodPageContent.upsert({
     where: { key_module: { key: 'about', module: 'ALL' } },
-    create: {
-        key: 'about', module: 'ALL',
-        about: {
-            appName: 'Chaska', version: '1.0.0',
-            description: 'Chaska connects you with the best restaurants in Indore and Jaipur, delivering fresh food fast.',
-            features: ['Live order tracking', 'Multiple payment options', 'Exclusive restaurant offers'],
-            stats: [{ label: 'Restaurants', value: '40+' }, { label: 'Cities', value: '2' }],
-        },
-    },
-    update: {},
+    create: { key: 'about', module: 'ALL', about: ABOUT_DATA },
+    update: { about: ABOUT_DATA },
 });
 console.log(`page content: ${PAGES.length + 1} pages`);
 
