@@ -484,12 +484,23 @@ const PAGES = [
     ['cancellation', { title: 'Cancellation Policy', content: '<h2>Cancellation Policy</h2><p>Orders can be cancelled before the restaurant accepts them. After acceptance, cancellation may incur charges.</p>' }],
     ['support', { title: 'Support', content: '<h2>Need help?</h2><p>Reach our support team any time from the Help section in the app, or email support@chaska24by7.com.</p>' }],
 ];
+// Seeded for every module (USER, RESTAURANT, DELIVERY, ALL) rather than just
+// ALL: the admin editor's per-module dropdown fetches that exact module, and
+// relying on the ALL-row fallback alone showed blank content for anyone who
+// is not fully convinced that fallback is implemented, module-select by
+// module-select.
+const MODULES = ['USER', 'RESTAURANT', 'DELIVERY', 'ALL'];
+let pageContentCount = 0;
 for (const [key, legal] of PAGES) {
-    await prisma.foodPageContent.upsert({
-        where: { key_module: { key, module: 'ALL' } },
-        create: { key, module: 'ALL', legal: { ...legal, email: 'support@chaska24by7.com', mobile: '+91 9001000001' } },
-        update: { legal: { ...legal, email: 'support@chaska24by7.com', mobile: '+91 9001000001' } },
-    });
+    for (const module of MODULES) {
+        const data = { ...legal, email: 'support@chaska24by7.com', mobile: '+91 9001000001' };
+        await prisma.foodPageContent.upsert({
+            where: { key_module: { key, module } },
+            create: { key, module, legal: data },
+            update: { legal: data },
+        });
+        pageContentCount += 1;
+    }
 }
 const ABOUT_DATA = {
     appName: 'Chaska', version: '1.0.0', logo: '',
@@ -509,7 +520,7 @@ await prisma.foodPageContent.upsert({
     create: { key: 'about', module: 'ALL', about: ABOUT_DATA },
     update: { about: ABOUT_DATA },
 });
-console.log(`page content: ${PAGES.length + 1} pages`);
+console.log(`page content: ${pageContentCount} legal rows + 1 about page`);
 
 // ── one sub-admin, scoped to both cities ───────────────────────────────────
 {
