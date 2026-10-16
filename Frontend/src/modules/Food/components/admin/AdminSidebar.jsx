@@ -691,7 +691,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
             </div>
           )}
           {isCollapsed && getBadgeCount(displayLabel, item.path) > 0 && (
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-teal-800" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#3F4726]" />
           )}
         </Link>
       )
@@ -716,7 +716,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
               <div className="relative">
                 <Icon className="w-4 h-4 shrink-0 text-neutral-100 transition-transform duration-300" />
                 {getBadgeCount(item.label, item.path) > 0 && (
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-teal-800" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#3F4726]" />
                 )}
               </div>
             </button>
@@ -747,7 +747,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
             </div>
           </button>
           {isExpanded && item.subItems && (
-            <div className="ml-5 mt-1 space-y-1 border-teal-600/60 pl-3 submenu-animate overflow-hidden">
+            <div className="ml-5 mt-1 space-y-1 border-[#6B7252]/40 pl-3 submenu-animate overflow-hidden">
               {item.subItems.map((subItem, subIndex) => {
                 const allSubPaths = item.subItems.map(si => si.path)
                 const isSubItemActive = isActive(subItem.path, allSubPaths)
@@ -873,7 +873,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
       `}</style>
       <div
         className={cn(
-          "bg-teal-800 border-r border-teal-600/60 h-screen fixed left-0 top-0 z-50 flex flex-col overflow-hidden",
+          "bg-[#3F4726] border-r border-[#6B7252]/40 h-screen fixed left-0 top-0 z-50 flex flex-col overflow-hidden",
           "transform transition-all duration-300 ease-in-out",
           "lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
@@ -881,7 +881,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
         )}
       >
         {/* Header with Logo and Brand */}
-        <div className="shrink-0 px-3 py-3 border-b border-teal-600/60 bg-teal-700 animate-[fadeIn_0.4s_ease-out]">
+        <div className="shrink-0 px-3 py-3 border-b border-[#6B7252]/40 bg-[#4B542D] animate-[fadeIn_0.4s_ease-out]">
           <div className="flex items-center justify-between mb-3">
             {!isCollapsed && (
               <div className="flex items-center gap-2 animate-[slideIn_0.3s_ease-out]">
@@ -969,7 +969,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={cn(
-                  "w-full pl-9 py-2 bg-teal-700 border border-teal-800 rounded-lg text-sm text-white placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-200 text-left",
+                  "w-full pl-9 py-2 bg-[#4B542D] border border-[#3F4726] rounded-lg text-sm text-white placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-200 text-left",
                   searchQuery ? "pr-9" : "pr-3"
                 )}
               />
@@ -1006,7 +1006,7 @@ export default function AdminSidebar({ isOpen = false, onClose, onCollapseChange
                   <div
                     key={sectionStableKey}
                     className={cn(
-                      index > 0 ? "mt-4 pt-4 border-t border-teal-600/60" : "",
+                      index > 0 ? "mt-4 pt-4 border-t border-[#6B7252]/40" : "",
                       "animate-[fadeIn_0.4s_ease-out]"
                     )}
                     style={{ animationDelay: `${index * 0.1}s` }}
