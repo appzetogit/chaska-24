@@ -9,3 +9,5 @@ suvio-api.conf
 # Quarantined malicious file found in Backend/api.js — kept locally for
 # forensics, never committed.
 /scratch/quarantine/
+config.bat
+node_modules

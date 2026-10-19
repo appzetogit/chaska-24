@@ -22,8 +22,9 @@ const DEFAULT_MODULE_POWER_SCANNING = {
   delivery: { themeColor: "#00B761", fontFamily: "Poppins" },
   // Fixed. The admin panel is internal tooling with a stable brand, not a
   // themeable storefront -- getModulePowerScanning deliberately ignores any
-  // stored value for this key.
-  admin: { themeColor: "#008078", fontFamily: "Poppins" },
+  // stored value for this key. Sampled from the Chaska logo, same as the
+  // admin sidebar (see AdminSidebar.jsx).
+  admin: { themeColor: "#3F4726", fontFamily: "Poppins" },
 };
 
 const FONT_STACKS = {
