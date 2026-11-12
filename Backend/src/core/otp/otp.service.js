@@ -22,9 +22,9 @@ const sendSmsViaIndiaHub = async (phone, otp) => {
         const digits = String(phone || '').replace(/\D/g, '');
         const msisdn = digits.startsWith('91') ? digits : `91${digits}`;
 
-        // EXACT DLT TEMPLATE provided by user:
-        // "Welcome to the ##var## powered by SMSINDIAHUB. Your OTP for registration is ##var##"
-        const message = `Welcome to the Minto Foods powered by Appzeto.Your OTP for registration is ${otp}.BGADEC.`;
+        // EXACT DLT TEMPLATE approved for sender BGADEC:
+        // "Welcome to the ##var## powered by Appzeto.Your OTP for registration is ##var##.BGADEC"
+        const message = `Welcome to the Chaska powered by Appzeto.Your OTP for registration is ${otp}.BGADEC`;
 
         // SMS India Hub HTTP GET API — query param names are case-sensitive per SOP
         const url = new URL('http://cloud.smsindiahub.in/vendorsms/pushsms.aspx');
